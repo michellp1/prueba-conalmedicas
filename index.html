@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CONALMEDICAS - Innovación para el Bienestar Humano</title>
+<style>
+  :root {
+    --navy: #002B5E;
+    --blue: #005F95;
+    --blue-mid: #0074B9;
+    --teal: #24B9D7;
+    --gray: #5E5B5C;
+    --gray-light: #EBEBEB;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--gray);
+    background-color: var(--white);
+    line-height: 1.6;
+  }
+
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+  img { max-width: 100%; display: block; }
+
+  /* ===== Header ===== */
+  header {
+    background-color: var(--navy);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 3px solid var(--teal);
+    border-right-color: transparent;
+    transform: rotate(-45deg);
+  }
+
+  .logo-text {
+    color: var(--white);
+  }
+
+  .logo-text strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .logo-text span {
+    display: block;
+    font-size: 10px;
+    color: var(--teal);
+    letter-spacing: 0.03em;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 32px;
+  }
+
+  nav a {
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--teal); }
+
+  .nav-cta {
+    background-color: var(--teal);
+    color: var(--navy) !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700 !important;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #041B3A 100%);
+    color: var(--white);
+    padding: 90px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    color: var(--teal);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: 16px;
+    color: #C7D4E2;
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background-color: var(--teal);
+    color: var(--navy);
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-block;
+  }
+
+  .btn-secondary {
+    border: 1px solid rgba(255,255,255,0.4);
+    color: var(--white);
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+  }
+
+  .hero-visual {
+    background-color: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 16px;
+    padding: 32px;
+  }
+
+  .hero-visual-title {
+    font-size: 13px;
+    color: var(--teal);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+
+  .hero-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero-stat:last-child { border-bottom: none; }
+
+  .hero-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .hero-stat-label {
+    font-size: 13px;
+    color: #A9BAD0;
+  }
+
+  /* ===== Sections ===== */
+  section {
+    padding: 80px 32px;
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 56px;
+  }
+
+  .section-tag {
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-header h2 {
+    color: var(--navy);
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  /* Valores */
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .value-card {
+    background-color: var(--navy);
+    color: var(--white);
+    border-radius: 12px;
+    padding: 28px 22px;
+    text-align: center;
+  }
+
+  .value-card .value-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 20px;
+    color: var(--teal);
+  }
+
+  .value-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* Líneas / marcas respaldadas */
+  .bg-light { background-color: #F5F7FA; }
+
+  .lines-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .line-card {
+    background-color: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--gray-light);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .line-card:hover {
+    box-shadow: 0 8px 24px rgba(0,43,94,0.1);
+    transform: translateY(-2px);
+  }
+
+  .line-card-top {
+    background-color: var(--navy);
+    padding: 24px;
+    color: var(--white);
+    min-height: 92px;
+  }
+
+  .line-card-top.enovis { background-color: #7A1F1F; }
+  .line-card-top.fixoss { background-color: var(--navy); }
+  .line-card-top.biomecanica { background-color: var(--blue); }
+
+  .line-card-top .brand {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .line-card-body {
+    padding: 22px 24px;
+  }
+
+  .line-card-body h3 {
+    color: var(--navy);
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .line-card-body p {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  /* Servicios */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .service-card {
+    text-align: center;
+    padding: 28px 16px;
+  }
+
+  .service-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #E6F1FB;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    font-size: 24px;
+  }
+
+  .service-card h3 {
+    color: var(--navy);
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .service-card p {
+    font-size: 13px;
+  }
+
+  /* CTA banda */
+  .cta-band {
+    background-color: var(--blue);
+    color: var(--white);
+    padding: 56px 32px;
+    text-align: center;
+  }
+
+  .cta-band h2 {
+    font-size: 26px;
+    margin-bottom: 12px;
+  }
+
+  .cta-band p {
+    color: #D6EAF7;
+    margin-bottom: 28px;
+  }
+
+  /* Footer */
+  footer {
+    background-color: #041B3A;
+    color: #A9BAD0;
+    padding: 56px 32px 24px;
+  }
+
+  .footer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .footer-grid h4 {
+    color: var(--white);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .footer-grid li {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .footer-grid a:hover { color: var(--teal); }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    nav, .nav-cta { display: none; }
+    .menu-toggle { display: block; }
+    .hero-content { grid-template-columns: 1fr; }
+    .values-grid, .lines-grid, .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 30px; }
+  }
+
+  @media (max-width: 560px) {
+    .values-grid, .lines-grid, .services-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-container">
+    <a href="#inicio" class="logo">
+      <div class="logo-mark" aria-hidden="true"></div>
+      <div class="logo-text">
+        <strong>CONALMEDICAS</strong>
+        <span>Innovación para el Bienestar Humano</span>
+      </div>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#lineas">Líneas</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+    <a href="#contacto" class="nav-cta">Contáctanos</a>
+    <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="hero-content">
+    <div>
+      <p class="eyebrow">Distribuidor autorizado de osteosíntesis</p>
+      <h1>Somos el aliado que transforma la incertidumbre médica en decisiones seguras</h1>
+      <p>Precisión, confianza y cuidado humano en cada dispositivo que distribuimos para procedimientos de osteosíntesis y reconstrucción.</p>
+      <div class="hero-buttons">
+        <a href="#lineas" class="btn-primary">Ver nuestras líneas</a>
+        <a href="#contacto" class="btn-secondary">Hablar con un asesor</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <p class="hero-visual-title">Nuestro compromiso</p>
+      <div class="hero-stat">
+        <span class="hero-stat-label">Confianza</span>
+        <span class="hero-stat-value">100%</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-label">Precisión</span>
+        <span class="hero-stat-value">100%</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-label">Cuidado humano</span>
+        <span class="hero-stat-value">100%</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-label">Orden estratégico</span>
+        <span class="hero-stat-value">100%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="nosotros">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-tag">Nuestros valores</p>
+      <h2>Lo que guía cada decisión</h2>
+    </div>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon">C</div>
+        <h3>Confianza</h3>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">P</div>
+        <h3>Precisión</h3>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">CH</div>
+        <h3>Cuidado humano</h3>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">OE</div>
+        <h3>Orden estratégico</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-light" id="lineas">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-tag">Marcas respaldadas</p>
+      <h2>Líneas que distribuimos en Colombia</h2>
+    </div>
+    <div class="lines-grid">
+      <div class="line-card">
+        <div class="line-card-top enovis">
+          <span class="brand">enovis.</span>
+        </div>
+        <div class="line-card-body">
+          <h3>Enovis</h3>
+          <p>Componentes de precisión para cirugías que exigen control, soporte y libertad de movimiento en cada paso.</p>
+        </div>
+      </div>
+      <div class="line-card">
+        <div class="line-card-top fixoss">
+          <span class="brand">FIXOSS</span>
+        </div>
+        <div class="line-card-body">
+          <h3>Fixoss</h3>
+          <p>Innovación y tecnología para el bienestar humano: implantes craneales personalizados y simulación quirúrgica.</p>
+        </div>
+      </div>
+      <div class="line-card">
+        <div class="line-card-top biomecanica">
+          <span class="brand">BIOMECANICA</span>
+        </div>
+        <div class="line-card-body">
+          <h3>Biomecánica</h3>
+          <p>Firmeza desde el interior: clavos de fémur y sistemas que se adaptan a la anatomía de cada paciente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="servicios">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-tag">Acompañamiento integral</p>
+      <h2>Servicios para instituciones y especialistas</h2>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">01</div>
+        <h3>Asesoría técnica</h3>
+        <p>Acompañamiento especializado en la selección del dispositivo adecuado.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">02</div>
+        <h3>Soporte en quirófano</h3>
+        <p>Presencia técnica durante procedimientos que lo requieran.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">03</div>
+        <h3>Gestión de pedidos</h3>
+        <p>Coordinación ágil de disponibilidad y entrega de inventario.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">04</div>
+        <h3>Capacitación</h3>
+        <p>Formación continua sobre nuevas tecnologías y protocolos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band" id="contacto">
+  <h2>Hablemos sobre su próximo procedimiento</h2>
+  <p>Nuestro equipo comercial está listo para asesorarle.</p>
+  <a href="mailto:coordinacionventas@conalmedicas.com" class="btn-primary">Escribir a coordinacionventas@conalmedicas.com</a>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <h4>CONALMEDICAS</h4>
+      <p style="font-size:13px; max-width: 260px;">Innovación para el Bienestar Humano. Distribuidor autorizado de dispositivos de osteosíntesis en Colombia.</p>
+    </div>
+    <div>
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#lineas">Líneas</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <ul>
+        <li>Comercial: +57 316 446 7522</li>
+        <li>Pedidos: +57 316 874 6430</li>
+        <li>coordinacionventas@conalmedicas.com</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Ubicación</h4>
+      <ul>
+        <li>Calle 5B3 # 37 - 129</li>
+        <li>Cali, Colombia</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Conalmedicas. Todos los derechos reservados.</span>
+    <span>Manual de Identidad Corporativa 2025</span>
+  </div>
+</footer>
+
+</body>
+</html>
