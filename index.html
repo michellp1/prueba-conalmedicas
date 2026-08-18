@@ -811,27 +811,39 @@ table.users tbody tr:last-child { border-bottom: none; }
       return Math.max(0.85, Math.min(0.97, 0.7 + coverage));
     }
 
-    const wholeStringScore = similarity(nq, nt);
     const textWords = nt.split(" ").filter(Boolean);
     const queryWords = nq.split(" ").filter(Boolean);
 
-    let bestSingleWordScore = 0;
-    for (const w of textWords) bestSingleWordScore = Math.max(bestSingleWordScore, similarity(nq, w));
-
-    let tokenCoverageScore = 0;
-    if (queryWords.length > 1) {
-      const perWordScores = queryWords.map((qw) => {
-        let best = 0;
-        for (const tw of textWords) {
-          if (tw === qw || tw.includes(qw) || qw.includes(tw)) best = Math.max(best, 0.95);
-          else best = Math.max(best, similarity(qw, tw));
-        }
-        return best;
-      });
-      tokenCoverageScore = perWordScores.reduce((a, b) => a + b, 0) / perWordScores.length;
+    // Búsqueda de una sola palabra: comparar contra el texto completo y
+    // contra cada palabra individual tiene sentido aquí.
+    if (queryWords.length <= 1) {
+      const wholeStringScore = similarity(nq, nt);
+      let bestSingleWordScore = 0;
+      for (const w of textWords) bestSingleWordScore = Math.max(bestSingleWordScore, similarity(nq, w));
+      return Math.max(wholeStringScore, bestSingleWordScore);
     }
 
-    return Math.max(wholeStringScore, bestSingleWordScore, tokenCoverageScore);
+    // Búsqueda de varias palabras: NO se usa la similitud de cadena
+    // completa aquí. Comparar dos frases letra por letra sin respetar
+    // límites de palabra es engañoso -- dos diagnósticos que comparten un
+    // prefijo o sufijo (ej. "Pectus excavatum" / "Pectus carinatum") pueden
+    // salir muy parecidos como texto plano aunque sean clínicamente
+    // distintos. En su lugar, se exige que CADA palabra de la búsqueda
+    // tenga una coincidencia razonable en el texto (mínimo, no promedio):
+    // así una palabra genérica que coincide perfecto (ej. "pectus") no
+    // "arrastra hacia arriba" el score cuando la palabra realmente
+    // distintiva de la búsqueda (ej. "excavatum" vs. "carinatum") no se
+    // parece a nada del texto.
+    const perWordScores = queryWords.map((qw) => {
+      let best = 0;
+      for (const tw of textWords) {
+        if (tw === qw || tw.includes(qw) || qw.includes(tw)) best = Math.max(best, 0.95);
+        else best = Math.max(best, similarity(qw, tw));
+      }
+      return best;
+    });
+
+    return Math.min(...perWordScores);
   }
 
   // ---------------------------------------------------------------------
