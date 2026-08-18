@@ -184,6 +184,18 @@ a:focus-visible {
   margin: 20px 0 0;
 }
 
+.role-picker-note { font-size: 0.7rem; color: #a3a3a3; margin: -2px 0 8px; line-height: 1.4; }
+.role-picker { display: flex; flex-direction: column; gap: 8px; }
+.role-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  border: 1px solid #d4d4d4; border-radius: 10px; padding: 10px 12px;
+  cursor: pointer; transition: border-color 0.15s, background-color 0.15s;
+}
+.role-option:has(input:checked) { border-color: var(--brand-blue); background: rgba(0,95,149,0.05); }
+.role-option input[type="radio"] { margin-top: 3px; accent-color: var(--brand-blue); }
+.role-option span { font-size: 0.85rem; line-height: 1.4; }
+.role-option small { color: var(--brand-gray); font-weight: 400; }
+
 .login-sent { text-align: center; padding: 12px 0; }
 .login-sent p.headline {
   color: var(--brand-blue);
@@ -593,6 +605,36 @@ table.users tbody tr:last-child { border-bottom: none; }
 }
 .btn-reject:hover { background: #fef2f2; }
 
+/* --- Mapeo de columnas (segundo paso de la carga) --- */
+.pf-mapping {
+  background: #fff; border: 1px solid #bfdbfe; border-radius: var(--radius);
+  padding: 18px; margin-top: 14px;
+}
+.pf-mapping h3 { font-family: var(--font-heading); font-size: 0.95rem; color: var(--brand-blue-dark); margin: 0 0 4px; }
+.pf-mapping-preview-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin: 10px 0 16px; }
+.pf-mapping-preview-table th {
+  background: var(--brand-gray-light); text-align: left; padding: 6px 8px; font-weight: 600; color: var(--brand-gray);
+  border-bottom: 1px solid #e5e5e5;
+}
+.pf-mapping-preview-table td { padding: 6px 8px; border-bottom: 1px solid #f5f5f5; color: #4b4b4b; }
+
+.pf-mapping-fields { display: grid; gap: 10px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .pf-mapping-fields { grid-template-columns: 1fr 1fr; } }
+.pf-mapping-field { display: flex; flex-direction: column; gap: 4px; }
+.pf-mapping-field label { font-size: 0.75rem; font-weight: 600; color: #3a3a3a; }
+.pf-mapping-field select {
+  border: 1px solid #d4d4d4; border-radius: 8px; padding: 7px 10px; font-size: 0.8rem; font-family: inherit;
+}
+.pf-mapping-field.required select { border-color: var(--brand-blue); }
+.pf-mapping-field .req-star { color: #b91c1c; }
+
+.pf-mapping-actions { display: flex; gap: 10px; margin-top: 16px; }
+.btn-cancel-mapping {
+  font-size: 0.8rem; color: var(--brand-gray); border: 1px solid #d4d4d4; padding: 8px 16px; border-radius: 8px;
+  background: #fff; transition: background-color 0.15s;
+}
+.btn-cancel-mapping:hover { background: var(--brand-gray-light); }
+
 /* ---------------------------------------------------------------------
    Toast (confirmaciones ligeras, ej. PDF generado)
    --------------------------------------------------------------------- */
@@ -687,6 +729,25 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
           <label for="login-email">Correo corporativo</label>
           <input type="email" id="login-email" placeholder="nombre@conalmedicas.com" required />
         </div>
+
+        <div class="field">
+          <label>¿Con qué rol quieres entrar a esta demo?</label>
+          <p class="role-picker-note">
+            En el portal real, el rol lo define el Administrador al crear tu cuenta — no lo eliges tú. Aquí,
+            como es un prototipo sin base de datos real, lo eliges para poder ver ambas vistas.
+          </p>
+          <div class="role-picker">
+            <label class="role-option">
+              <input type="radio" name="login-role" value="COMERCIAL" checked />
+              <span><strong>Comercial</strong><br /><small>Buscar diagnósticos y generar PDF</small></span>
+            </label>
+            <label class="role-option">
+              <input type="radio" name="login-role" value="ADMIN" />
+              <span><strong>Administrador</strong><br /><small>Además: cargar portafolio y gestionar usuarios</small></span>
+            </label>
+          </div>
+        </div>
+
         <p class="form-error" id="login-error" style="display:none;"></p>
         <button type="submit" class="btn-primary" id="login-submit">Enviar enlace de acceso</button>
       </form>
@@ -792,12 +853,33 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
 
           <section class="pf-section">
             <h2>1. Cargar o actualizar portafolio</h2>
-            <p class="pf-hint">Sube un archivo .xlsx con columnas REFERENCIA, DESC_ITEM, DESC_LINEA, DESC_CATEGORIA.</p>
+            <p class="pf-hint">
+              Sube cualquier Excel de productos — cada proveedor puede usar columnas distintas; en el
+              siguiente paso le indicas al sistema cuál es cuál, una sola vez por archivo.
+            </p>
             <form id="upload-form" class="pf-upload-form">
               <input type="file" id="upload-file" accept=".xlsx,.xls" />
-              <button type="submit" class="btn-primary" style="width:auto; padding:9px 18px; font-size:0.875rem;">Subir y actualizar</button>
+              <button type="submit" class="btn-primary" style="width:auto; padding:9px 18px; font-size:0.875rem;">Analizar archivo</button>
             </form>
             <p id="upload-msg" class="pf-msg" style="display:none;"></p>
+
+            <!-- Paso 2: mapeo de columnas -- aparece tras analizar el archivo -->
+            <div id="column-mapping" class="pf-mapping" style="display:none;">
+              <h3>Confirma qué columna es cada dato</h3>
+              <p class="pf-hint">
+                Detectamos estas columnas en tu archivo (mostramos un ejemplo real de la primera fila).
+                Indica cuál corresponde a cada campo. Si alguna no aplica, déjala en "No usar".
+              </p>
+              <div id="mapping-preview"></div>
+              <div class="pf-mapping-fields" id="mapping-fields"></div>
+              <div class="pf-mapping-actions">
+                <button type="button" class="btn-primary" id="confirm-mapping-btn" style="width:auto; padding:9px 18px; font-size:0.875rem;">
+                  Confirmar y procesar
+                </button>
+                <button type="button" class="btn-cancel-mapping" id="cancel-mapping-btn">Cancelar</button>
+              </div>
+            </div>
+
             <div id="upload-history"></div>
           </section>
 
@@ -1197,11 +1279,14 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     }
     loginError.style.display = "none";
 
+    const selectedRole = document.querySelector('input[name="login-role"]:checked').value;
+
     document.getElementById("login-submit").disabled = true;
     document.getElementById("login-submit").textContent = "Enviando enlace...";
 
     setTimeout(() => {
       session.email = email;
+      session.role = selectedRole;
       document.getElementById("login-sent-email").textContent = email;
       loginForm.style.display = "none";
       document.getElementById("login-sent").style.display = "block";
@@ -1547,9 +1632,46 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   //   1) subir Excel NUNCA crea relaciones con diagnósticos por sí solo.
   //   2) toda sugerencia nace sin publicar (adminReviewed=false-equivalente)
   //      hasta que el Admin la aprueba o la rechaza aquí mismo.
+  //   3) cada proveedor puede tener columnas distintas: el archivo NUNCA se
+  //      procesa "adivinando" nombres de columna -- siempre hay un paso de
+  //      mapeo explícito donde el Admin confirma qué columna es cuál.
   // ---------------------------------------------------------------------
   const uploadForm = document.getElementById("upload-form");
   const uploadMsgEl = document.getElementById("upload-msg");
+  const mappingPanel = document.getElementById("column-mapping");
+  const mappingFieldsEl = document.getElementById("mapping-fields");
+  const mappingPreviewEl = document.getElementById("mapping-preview");
+
+  let pendingUpload = null; // { fileName, rows, columns }
+
+  const MAPPING_TARGETS = [
+    { key: "reference", label: "Referencia / SKU", required: true },
+    { key: "productName", label: "Nombre del producto", required: true },
+    { key: "lineName", label: "Línea / familia de producto", required: true },
+    { key: "manufacturer", label: "Fabricante / marca / proveedor", required: true },
+  ];
+
+  // Heurística SOLO para preseleccionar una sugerencia cómoda -- el Admin
+  // siempre puede cambiarla antes de confirmar. Nunca se procesa nada sin
+  // que él confirme el mapeo.
+  const GUESS_HINTS = {
+    reference: ["referencia", "reference", "ref", "sku", "codigo", "código"],
+    productName: ["desc_item", "descripcion", "descripción", "producto", "item", "nombre"],
+    lineName: ["desc_linea", "línea", "linea", "familia", "sistema"],
+    manufacturer: ["desc_categoria", "categoria", "categoría", "marca", "fabricante", "proveedor", "vendor", "brand"],
+  };
+
+  function guessColumnFor(targetKey, columns) {
+    const hints = GUESS_HINTS[targetKey] || [];
+    // Coincidencia parcial en ambos sentidos (ej. "NOMBRE_PRODUCTO" sí debe
+    // sugerir el pistón "nombre" o "producto"), siempre como sugerencia
+    // editable -- nunca reemplaza la confirmación manual obligatoria.
+    const found = columns.find((c) => {
+      const norm = c.trim().toLowerCase();
+      return hints.some((h) => norm.includes(h) || h.includes(norm));
+    });
+    return found || "";
+  }
 
   uploadForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1558,7 +1680,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     if (!file) return;
 
     if (typeof XLSX === "undefined") {
-      showUploadMsg("error", "No fue posible cargar el lector de Excel (requiere conexión a internet en esta demo).");
+      showUploadMsg("error", "No fue posible cargar el lector de Excel.");
       return;
     }
 
@@ -1569,7 +1691,20 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         const workbook = XLSX.read(data, { type: "array" });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
-        processUploadedRows(file.name, rows);
+
+        if (rows.length === 0) {
+          showUploadMsg("error", "El archivo no tiene filas de datos.");
+          return;
+        }
+
+        const columns = Object.keys(rows[0]);
+        pendingUpload = { fileName: file.name, rows: rows, columns: columns };
+        showColumnMapping(pendingUpload);
+        showUploadMsg(
+          "ok",
+          "Se detectaron " + rows.length + " filas y " + columns.length +
+            " columnas. Confirma el mapeo abajo antes de procesar."
+        );
       } catch (err) {
         showUploadMsg("error", "No fue posible leer el archivo. Verifica que sea un .xlsx válido.");
       }
@@ -1577,28 +1712,83 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     reader.readAsArrayBuffer(file);
   });
 
-  function pick(row, names) {
-    for (const key of Object.keys(row)) {
-      const norm = key.trim().toUpperCase();
-      if (names.includes(norm)) {
-        const val = row[key];
-        return val === undefined || val === null ? "" : String(val).trim();
-      }
-    }
-    return "";
+  function showColumnMapping(upload) {
+    const sample = upload.rows[0];
+
+    // Vista previa: las columnas reales del archivo + un ejemplo de la
+    // primera fila, para que el Admin vea exactamente qué está mapeando.
+    let previewHtml = '<table class="pf-mapping-preview-table"><thead><tr>';
+    upload.columns.forEach((c) => (previewHtml += "<th>" + escapeHtml(c) + "</th>"));
+    previewHtml += "</tr></thead><tbody><tr>";
+    upload.columns.forEach((c) => (previewHtml += "<td>" + escapeHtml(String(sample[c] ?? "")) + "</td>"));
+    previewHtml += "</tr></tbody></table>";
+    mappingPreviewEl.innerHTML = previewHtml;
+
+    // Un <select> por cada campo que necesitamos, con las columnas REALES
+    // del archivo que se subió (nunca nombres inventados).
+    mappingFieldsEl.innerHTML = MAPPING_TARGETS.map((t) => {
+      const guess = guessColumnFor(t.key, upload.columns);
+      const options = ['<option value="">No usar</option>']
+        .concat(
+          upload.columns.map(
+            (c) => `<option value="${escapeHtml(c)}" ${c === guess ? "selected" : ""}>${escapeHtml(c)}</option>`
+          )
+        )
+        .join("");
+      return (
+        `<div class="pf-mapping-field ${t.required ? "required" : ""}" data-target="${t.key}">` +
+        `<label>${t.label}${t.required ? ' <span class="req-star">*</span>' : ""}</label>` +
+        `<select data-target="${t.key}">${options}</select>` +
+        "</div>"
+      );
+    }).join("");
+
+    mappingPanel.style.display = "block";
   }
 
-  function processUploadedRows(fileName, rows) {
+  document.getElementById("confirm-mapping-btn").addEventListener("click", () => {
+    if (!pendingUpload) return;
+
+    const mapping = {};
+    let missingRequired = false;
+    MAPPING_TARGETS.forEach((t) => {
+      const select = mappingFieldsEl.querySelector(`select[data-target="${t.key}"]`);
+      const value = select.value;
+      mapping[t.key] = value;
+      if (t.required && !value) missingRequired = true;
+    });
+
+    if (missingRequired) {
+      showUploadMsg("error", "Selecciona una columna para todos los campos obligatorios (*) antes de continuar.");
+      return;
+    }
+
+    processUploadedRows(pendingUpload.fileName, pendingUpload.rows, mapping);
+    hideColumnMapping();
+  });
+
+  document.getElementById("cancel-mapping-btn").addEventListener("click", () => {
+    hideColumnMapping();
+    showUploadMsg("error", "Carga cancelada. No se procesó ningún dato.");
+  });
+
+  function hideColumnMapping() {
+    mappingPanel.style.display = "none";
+    pendingUpload = null;
+    uploadForm.reset();
+  }
+
+  function processUploadedRows(fileName, rows, mapping) {
     let productsCreated = 0;
     let productsUpdated = 0;
     let linesCreated = 0;
     let rowsSkipped = 0;
 
     rows.forEach((row) => {
-      const reference = pick(row, ["REFERENCIA", "REFERENCE", "REF"]);
-      const itemName = pick(row, ["DESC_ITEM", "DESCRIPCION", "PRODUCTO", "ITEM"]);
-      const lineName = pick(row, ["DESC_LINEA", "LINEA", "LÍNEA"]);
-      const manufacturer = pick(row, ["DESC_CATEGORIA", "CATEGORIA", "MARCA", "FABRICANTE", "PROVEEDOR"]);
+      const reference = String(row[mapping.reference] ?? "").trim();
+      const itemName = String(row[mapping.productName] ?? "").trim();
+      const lineName = String(row[mapping.lineName] ?? "").trim();
+      const manufacturer = String(row[mapping.manufacturer] ?? "").trim();
 
       if (!reference || !itemName || !lineName || !manufacturer || /^-+$/.test(reference)) {
         rowsSkipped++;
@@ -1643,7 +1833,6 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         productsUpdated + " actualizados, " + linesCreated + " líneas nuevas" +
         (rowsSkipped ? ", " + rowsSkipped + " filas omitidas por datos incompletos." : ".")
     );
-    uploadForm.reset();
     renderPortfolio();
   }
 
